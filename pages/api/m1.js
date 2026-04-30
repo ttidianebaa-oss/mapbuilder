@@ -1,3 +1,5 @@
+import { isDemoMode, demoM1 } from '../../lib/demoData';
+
 const BASE_URL = 'https://api.anthropic.com/v1/messages';
 
 export default async function handler(req, res) {
@@ -5,6 +7,8 @@ export default async function handler(req, res) {
 
   const { projectName, category, currency, founderCountry, targetCountry, description, targetMarket, problem } = req.body || {};
   if (!description) return res.status(400).json({ error: 'Champ description requis' });
+
+  if (isDemoMode()) return res.status(200).json(demoM1);
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_API_KEY non configurée' });

@@ -118,12 +118,20 @@ Réponds UNIQUEMENT en JSON valide (sans markdown) :
   });
 }
 
+import { isDemoMode, demoM2 } from '../../lib/demoData';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { step, idea, context, marche, step2Data } = req.body || {};
   if (!idea) return res.status(400).json({ error: 'Champ idea requis' });
   if (![1, 2, 3].includes(step)) return res.status(400).json({ error: 'step doit être 1, 2 ou 3' });
+
+  if (isDemoMode()) {
+    if (step === 1) return res.status(200).json(demoM2.step1);
+    if (step === 2) return res.status(200).json(demoM2.step2);
+    if (step === 3) return res.status(200).json(demoM2.step3);
+  }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_API_KEY non configurée' });
