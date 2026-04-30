@@ -1,14 +1,14 @@
-import { isDemoMode, demoM7 } from '../../lib/demoData';
+import { demoM7 } from '../../lib/demoData';
 
 const BASE_URL = 'https://api.anthropic.com/v1/messages';
 
 export default async function handler(req, res) {
+  if (process.env.DEMO_MODE === 'true') return res.status(200).json(demoM7);
+
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { m1Data, m3Data, m4Data } = req.body || {};
   if (!m1Data || !m3Data) return res.status(400).json({ error: 'm1Data et m3Data requis' });
-
-  if (isDemoMode()) return res.status(200).json(demoM7);
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_API_KEY non configurée' });
@@ -54,7 +54,7 @@ Réponds UNIQUEMENT en JSON valide (sans markdown) :
   try {
     const apiRes = await fetch(BASE_URL, {
       method: 'POST',
-      headers: { 'Content-Type':'application/json', 'x-api-key':apiKey, 'anthropic-version':'2023-06-01' },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 3000,
